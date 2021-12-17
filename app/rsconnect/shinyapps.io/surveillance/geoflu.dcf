@@ -1,0 +1,13 @@
+name: geoflu
+title: geoflu
+username:
+account: surveillance
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5343639
+bundleId: 5386425
+url: https://surveillance.shinyapps.io/geoflu/
+when: 1639779589.92705
+lastSyncTime: 1639779589.92707
+asMultiple: FALSE
+asStatic: FALSE
