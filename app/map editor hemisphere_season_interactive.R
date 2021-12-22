@@ -17,7 +17,7 @@ library(lubridate)
 ### read map editor global interactive.R first to get df
 
 df %>%
-  group_by(country_area_or_territory, season) %>%
+  group_by(hemi, season) %>%
   mutate(
     a_total = sum(a_total, na.rm=T),
     b_total = sum(b_total, na.rm=T),
@@ -40,46 +40,46 @@ df %>%
     pct_positivity = total_number_of_influenza_positive_viruses/(total_number_of_influenza_positive_viruses + total_number_of_influenza_negative_viruses) *100
     
   ) %>%
-  ungroup() -> df_season
+  ungroup() -> df_season_hem
 
-mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"){
-  df_season %>%
-    filter(season == datez_season) -> df_season
+mapme_strain_season_hem<- function(datez_hem_season=choicez[1], selection_hem_season="pct_b"){
+  df_season_hem %>%
+    filter(season == datez_hem_season) -> df_season_hem
   
   pal <- colorNumeric(
     palette = "Blues",
-    domain = as.data.frame(df_season[,selection_season])[,1]
+    domain = as.data.frame(df_season_hem[,selection_hem_season])[,1]
   )
   
   # labels for popup in HTML
-  label <- paste0( '<strong>', "Country: ", '</strong>'
-                   , df_season$country_area_or_territory
+  label <- paste0( '<strong>', "Hemisphere: ", '</strong>'
+                   , stringr::str_to_title(df_season_hem$hemi)
                    , "<br>"
                    , '<strong>', "Total Positive Samples (%): ", '</strong>'
                    , paste0(
-                     df_season$total_number_of_influenza_positive_viruses, 
+                     df_season_hem$total_number_of_influenza_positive_viruses, 
                      " (", 
-                     round(df_season$total_number_of_influenza_positive_viruses/
-                             (df_season$total_number_of_influenza_negative_viruses +
-                                df_season$total_number_of_influenza_positive_viruses)*100,1),")")
+                     round(df_season_hem$total_number_of_influenza_positive_viruses/
+                             (df_season_hem$total_number_of_influenza_negative_viruses +
+                                df_season_hem$total_number_of_influenza_positive_viruses)*100,1),")")
                    , "<br>"
                    , '<strong>', "Total Influenza A (%): ", '</strong>'
-                   , paste0(df_season$a_total," (", round(df_season$pct_a,2),")")
+                   , paste0(df_season_hem$a_total," (", round(df_season_hem$pct_a,2),")")
                    , "<br>"
                    , '<strong>', "Total Influenza A, H1 (%): ", '</strong>'
-                   , paste0(df_season$a_h1," (", round(df_season$pct_h1,2),")")
+                   , paste0(df_season_hem$a_h1," (", round(df_season_hem$pct_h1,2),")")
                    , "<br>"
                    , '<strong>', "Total Influenza A H3 (%): ", '</strong>'
-                   , paste0(df_season$a_h3," (", round(df_season$pct_h3,2),")")
+                   , paste0(df_season_hem$a_h3," (", round(df_season_hem$pct_h3,2),")")
                    , "<br>"
                    , '<strong>', "Total Influenza B (%): ", '</strong>'
-                   , paste0(df_season$b_total," (", round(df_season$pct_b,2),")")
+                   , paste0(df_season_hem$b_total," (", round(df_season_hem$pct_b,2),")")
                    , "<br>"
                    , '<strong>', "Total Influenza B, Yamagata (%): ", '</strong>'
-                   , paste0(df_season$b_yamagata_lineage," (", round(df_season$pct_by,2),")")
+                   , paste0(df_season_hem$b_yamagata_lineage," (", round(df_season_hem$pct_by,2),")")
                    , "<br>"
                    , '<strong>', "Total Influenza B, Victoria (%): ", '</strong>'
-                   , paste0(df_season$b_victoria_lineage," (", round(df_season$pct_bv,2),")")
+                   , paste0(df_season_hem$b_victoria_lineage," (", round(df_season_hem$pct_bv,2),")")
                    , "<br>")%>%
     lapply(htmltools::HTML)
   
@@ -87,8 +87,8 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
   leaflet(options = leafletOptions(crs = leafletCRS(crsClass = "L.CRS.Simple"),
                                    minZoom = -50)) %>%
     setView(lng = 0, lat = 0, zoom = 1.75) %>%
-    addPolygons(data = df_season, 
-                fillColor = ~pal(as.data.frame(df_season[,selection_season])[,1]),
+    addPolygons(data = df_season_hem, 
+                fillColor = ~pal(as.data.frame(df_season_hem[,selection_hem_season])[,1]),
                 weight = 0.2,
                 opacity = 1,
                 color = "white",
@@ -101,10 +101,10 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
                  color = "black") %>%
     addLegend("bottomright", 
               pal = pal, 
-              values = as.data.frame(df_season[,selection_season])[,1],
-              title = paste0("Date: ", datez_season, "</br>", "Percent"),
-              opacity = 1) -> map_season
-  return(map_season) 
+              values = as.data.frame(df_season_hem[,selection_hem_season])[,1],
+              title = paste0("Period: ", datez_hem_season, "</br>", "Percent"),
+              opacity = 1) -> map_season_hem
+  return(map_season_hem) 
 }
 
 

@@ -10,6 +10,8 @@ library(tmaptools)
 #tmap_mode("view")
 library(leaflet)
 library(lubridate)
+library(data.table)
+
 # 
 # ##https://worldpopulationreview.com/country-rankings/tropical-countries
 # # north <- c("Algeria", "Austria", "Belgium", "Bulgaria", "Canada", "China", "Egypt",
@@ -74,6 +76,8 @@ df %>%
   )%>%
   filter(end_date >="2009-10-01"
   ) -> df
+
+df <- subset(df, !is.na(end_date))
 
 df%>%
   group_by(country_area_or_territory, moyr) %>%
@@ -141,7 +145,7 @@ data("World")
 df <- merge(World, df, by.x="iso_a3", by.y="code", all.x=T)
 
 
-
+df <- subset(df, !is.na(df$end_date))
 
 # df$hemisphere<- ifelse(df$iso_a3%in%south$code, "Southern", 
 #                        ifelse(df$iso_a3%in%tropical$code, "Tropical", "Northern"))
@@ -157,11 +161,19 @@ hemi <- read.csv("hemi.csv")
 df <- merge(df, hemi, by="iso_a3", all.x=T)
 
 
-
+### make flu seasons
 df$season <- factor(ifelse(lubridate::month(df$end_date)%in%c(11,12,1,2,3,4), 0,1), levels=c(0,1), labels=c("Northern Season", "Southern Season"))
 
-df$season <- factor(paste0(df$season, "-", lubridate::year(df$end_date),"/", lubridate::year(df$end_date)+1))
+### 
+df$season <- factor(ifelse(df$season=="Northern Season", 
+                    paste0(df$season, "-", lubridate::year(df$end_date),"/", lubridate::year(df$end_date)+1),
+                        paste0(df$season, "-", lubridate::year(df$end_date)-1,"/", lubridate::year(df$end_date))))
 
+
+north.season <- levels(df$season)[levels(df$season) %like% "Northern"]
+south.season <- levels(df$season)[levels(df$season) %like% "Southern"]
+
+choicez <- c(rbind(south.season, north.season))
 
 #######################################################
 #### map
@@ -273,9 +285,11 @@ mapme_strain<- function(datez=max(df$moyr, na.rm=T), selection="pct_b"){
               pal = pal, 
               values = as.data.frame(df[,selection])[,1],
               title = paste0("Date: ", datez, "</br>", "Percent"),
-              opacity = 1) -> map
+              opacity = 1) ->map
+    # addGraticule(interval=23.5, 
+    #              style = list(color = "black", weight = .6, opacity=0.7),
+    #              options = pathOptions(pointerEvents = "none", clickable = T))-> map
   return(map) 
 }
 
 
-min(df$pct_a, na.rm=T)

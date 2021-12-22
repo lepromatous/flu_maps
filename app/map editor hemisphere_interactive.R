@@ -43,13 +43,13 @@ df %>%
   ) %>%
   ungroup() -> df_hem
 
-mapme_strain_hemi<- function(datez=max(df_hem$moyr, na.rm=T), selection="pct_b"){
+mapme_strain_hemi<- function(datez_hem=max(df_hem$moyr, na.rm=T), selection_hem="pct_b"){
   df_hem %>%
-    filter(moyr == datez) -> df_hem
+    filter(moyr == datez_hem) -> df_hem
   
   pal <- colorNumeric(
     palette = "Blues",
-    domain = as.data.frame(df_hem[,selection])[,1]
+    domain = as.data.frame(df_hem[,selection_hem])[,1]
   )
   
   # labels for popup in HTML
@@ -89,7 +89,7 @@ mapme_strain_hemi<- function(datez=max(df_hem$moyr, na.rm=T), selection="pct_b")
                                    minZoom = -50)) %>%
     setView(lng = 0, lat = 0, zoom = 1.75) %>%
     addPolygons(data = df_hem, 
-                fillColor = ~pal(as.data.frame(df_hem[,selection])[,1]),
+                fillColor = ~pal(as.data.frame(df_hem[,selection_hem])[,1]),
                 weight = 0.2,
                 opacity = 1,
                 color = "white",
@@ -102,8 +102,8 @@ mapme_strain_hemi<- function(datez=max(df_hem$moyr, na.rm=T), selection="pct_b")
                  color = "black") %>%
     addLegend("bottomright", 
               pal = pal, 
-              values = as.data.frame(df_hem[,selection])[,1],
-              title = paste0("Date: ", datez, "</br>", "Percent"),
+              values = as.data.frame(df_hem[,selection_hem])[,1],
+              title = paste0("Period: ", datez_hem, "</br>", "Percent"),
               opacity = 1) -> map_hem
   return(map_hem) 
 }
