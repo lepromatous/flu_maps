@@ -25,6 +25,8 @@ source("map editor global_season_interactive.R")
 source("map editor hemisphere_interactive.R")
 source("map editor hemisphere_season_interactive.R")
 
+source("hemisphere strain plot.R")
+
 
 
 ### NA in legend fix from here: https://github.com/rstudio/leaflet/issues/615
@@ -41,6 +43,7 @@ ui <- dashboardPage(
       br(),
       menuItem("Percent of Strains by Country and Month", tabName = "pct_strain_country"),
       menuItem("Percent of Strains by Hemisphere and Month", tabName = "pct_strain_hemi"),
+      menuItem("Trajectory of Strains by Month", tabName="trajectory"),
       menuItem("Percent of Strains by Country and Flu Season", tabName = "pct_strain_country_season"),
       menuItem("Percent of Strains by Hemisphere and Flu Season", tabName = "pct_strain_hemi_season"),
       br(),
@@ -156,9 +159,41 @@ ui <- dashboardPage(
       ), # close tab item pct strain
 
 
+      
+      
+      
+      
+      
+      tabItem(
+        tabName = "trajectory",
+        selectInput(
+          inputId = "selector_strain_trajectory",
+          label = "Select strain to analyze",
+          width = "50%",
+          choices = c(
+            "Influenza A" = "pct_a",
+            "Influenza A H1" = "pct_h1",
+            "Influenza A H3" = "pct_h3",
+            "Influenza B" = "pct_b",
+            "Influenza B Victoria" = "pct_bv",
+            "Influenza B Yamagata" = "pct_by"
+          ),
+          selected = "pct_b"
+        ),
+          
+        ############################################
+        ### MAIN OUTPUTS
+        ############################################
+        plotOutput("strain_traj", height = "70vh"),
+        br(),
+        p("Percentages are computed with the total influenza positive specimens per hemisphere as the denominator.")
+      ), # close tab item trajectory
 
 
-
+      
+      
+      
+      
       tabItem(
         tabName = "pct_strain_country_season",
         selectInput(
@@ -280,6 +315,12 @@ server <- function(input, output, session) {
     mapme_strain_season_hem(
       datez_hem_season = input$date_selector_strain_season_hemi,
       selection_hem_season = input$selector_strain_season_hemi
+    )
+  )
+  
+  output$strain_traj <- renderPlot(
+    strain_trajectory(
+      strain_traje = input$selector_strain_trajectory
     )
   )
 }

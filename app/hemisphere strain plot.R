@@ -1,13 +1,15 @@
 
-# options(repos = c(
-#   techtonique = 'https://techtonique.r-universe.dev',
-#   CRAN = 'https://cloud.r-project.org'))
-# install.packages("ahead")
-#library(ahead)
 library(tidyverse)
 library(ranger)
 library(viridis)
+library(sf)
+library(grid)
+library(plotly)
+library(ggplotify)
 
+# setwd("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/")
+# source("read base data.R")
+# source("map editor hemisphere_season_interactive.R")
 
 test <- df_season_hem
 st_geometry(test)<- NULL
@@ -19,12 +21,7 @@ test %>%
     income_grp = factor(income_grp),
     who_region = factor(who_region),
     influenza_transmission_zone = factor(influenza_transmission_zone)
-  ) %>%
-  select(continent, area, pop_est, pop_est_dens, economy, gdp_cap_est,
-           life_exp, well_being, footprint, inequality, HPI,season,hemi,
-           who_region, influenza_transmission_zone, moyr, pct_b, end_date) -> test
-
-
+  )  -> test
 
 test %>%
   group_by(hemi, season) %>%
@@ -32,69 +29,58 @@ test %>%
   ungroup() -> test2
 
 
-
-lab1 <- (length(test2$moyr)/3)/2
-lab2 <- (length(test2$moyr)/3)/2 *3
-lab3 <- (length(test2$moyr)/3)/2 *5
-lab.vert <- ceiling(max(test2$pct_b))+2.5
-xlab.end <- (length(test2$moyr)/3)-2
-xlabs <- c(choicez[1], rep("", times=xlab.end), choicez[length(choicez)],
-           choicez[1], rep("", times=xlab.end), choicez[length(choicez)],
-           choicez[1], rep("", times=xlab.end), choicez[length(choicez)])
+# New facet label names for supp variable
+fac.labs <- c("Northern", "Southern", "Tropical")
+names(fac.labs) <- c("northern", "southern", "tropics")
 
 
 
-ggplot() + 
-  
-  geom_smooth(data = test2, 
-            aes(x=seq(1,length(moyr)), 
-                y=pct_b, fill=hemi, color=hemi), show.legend = F) +
-  
-  geom_rect(aes(xmin=0, xmax=length(test2$moyr)/3 + 0.4, ymin=ceiling(max(test2$pct_b)), ymax=ceiling(max(test2$pct_b))+5), fill="#E41A1C", alpha=0.5) +
-  
-  geom_rect(aes(xmin=length(test2$moyr)/3 +.6, xmax=length(test2$moyr)/3*2 +0.5, ymin=ceiling(max(test2$pct_b)), ymax=ceiling(max(test2$pct_b))+5), fill="#377EB8", alpha=0.5) +
-  
-  geom_rect(aes(xmin=length(test2$moyr)/3*2 +0.6, xmax=length(test2$moyr), ymin=ceiling(max(test2$pct_b)), ymax=ceiling(max(test2$pct_b))+5), fill="#4DAF4A", alpha=0.5) +
+strain_trajectory <- function(strain_traje="pct_b"){
 
-  scale_color_brewer(palette = "Set1", "Hemisphere") +
-  
-  scale_fill_brewer(palette = "Set1", "Hemisphere") +
-  # 
-  # geom_vline(aes(xintercept=length(test2$moyr)/3 + 0.4), colour="white", size=0.8) +
-  # 
-  # geom_vline(aes(xintercept=length(test2$moyr)/3*2+0.4), colour="white", size=1) +
-  # 
-  scale_y_continuous(expand=expansion(mult = c(0,0.05)), limits=c(0,NA))+
-  
-  geom_segment(aes(x=0, y=0, xend=lab1*2-0.4, yend=0), size=1.1) +
-  geom_segment(aes(x=lab1*2+0.6, y=0, xend=lab1*4-0.4, yend=0), size=1.1) +
-  geom_segment(aes(x=lab1*4+0.6, y=0, xend=lab1*6-0.4, yend=0), size=1.1) +
-  
-  ylab("Percent\n") +
-  xlab("") +
-  
-  theme(
-    panel.background = element_blank(),
-    axis.line.y = element_line("black"),
-    axis.line.x = element_blank(),
-    axis.text.x=element_text(angle=90),
-    axis.ticks.x=element_line("black"),
-    plot.margin = margin(0, 0, 2, 0.5, "cm")
-  ) + 
-  
-  annotate(
-    "text", label = "Northern",
-    x = lab1, y = lab.vert, size = 5, colour = "black"
-  ) +
-  annotate(
-    "text", label = "Southern",
-    x = lab2, y = lab.vert, size = 5, colour = "black"
-  ) +
-  annotate(
-    "text", label = "Tropics",
-    x = lab3, y = lab.vert, size = 5, colour = "black"
-  ) +
-  scale_x_discrete(labels=xlabs)
+         
+          ggplot() + 
+            
+            geom_smooth(data = test2, 
+                        aes_string(x="moyr", 
+                            y=strain_traje, color="hemi", fill="hemi"), show.legend = F) +
+            facet_wrap(~hemi, labeller = labeller(hemi = fac.labs))  + 
+            
+            scale_color_brewer(palette = "Set1", "Hemisphere") +
+            
+            scale_fill_brewer(palette = "Set1", "Hemisphere") +
+          
+            scale_y_continuous(expand=expansion(mult = c(0,0.05)), limits=c(0,NA))  +
+            
+            ylab("Percent\n") +
+            xlab("") +
+            
+            theme(
+              panel.background = element_blank(),
+              axis.line = element_line("black"),
+              axis.text.x=element_text(angle=60, vjust = 1, hjust = 1),
+              axis.ticks.x=element_line("black"),
+              plot.margin = margin(0.5, 0.5, 1, 0.5, "cm"),
+              strip.text.x = element_text(size = 12, colour = "white"),
+              panel.spacing = unit(1.5, "lines")
+              # strip.background = element_rect(
+              #   color="black", fill=c("#E41A1C", "#377EB8", "#4DAF4A"), size=1.5, linetype="solid"
+              # ) ### that was for single box only. below does multiple. 
+            ) -> p
+           
 
+          ### chhange top box colors
+          g <- ggplot_gtable(ggplot_build(p))
+          strip_both <- which(grepl('strip-', g$layout$name))
+          fills <- c("#E41A1C","#377EB8","#4DAF4A")
+          k <- 1
 
+          for (i in strip_both) {
+            j <- which(grepl('rect', g$grobs[[i]]$grobs[[1]]$childrenOrder))
+            g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
+            k <- k+1
+          }
 
+          b<-plot(ggplotify::as.ggplot(g))
+          return(b)
+
+}
