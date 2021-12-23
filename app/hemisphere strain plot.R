@@ -3,7 +3,7 @@
 #   techtonique = 'https://techtonique.r-universe.dev',
 #   CRAN = 'https://cloud.r-project.org'))
 # install.packages("ahead")
-library(ahead)
+#library(ahead)
 library(tidyverse)
 library(ranger)
 library(viridis)
