@@ -116,4 +116,3 @@ mapme_strain<- function(datez=min(df$moyr, na.rm=T), selection="pct_b"){
 return(p)
 }
 
-mapme_strain()
