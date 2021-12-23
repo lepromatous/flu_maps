@@ -14,6 +14,11 @@ library(rgeos)
 library(leaflet)
 library(htmltools)
 
+### get data
+source("read base data.R")
+
+
+### map functions
 source("map editor global_interactive.R")
 source("map editor global_season_interactive.R")
 
@@ -96,8 +101,8 @@ ui <- dashboardPage(
           inputId = "date_selector_strain",
           label = "Select your Month/Year",
           width = "75%",
-          choices = names(table(df$moyr)),
-          from_min = min(unique(df$moyr), na.rm = T), to_max = max(unique(df$moyr), na.rm = T),
+          choices = names(table(df_global$moyr)),
+          from_min = min(unique(df_global$moyr), na.rm = T), to_max = max(unique(df_global$moyr), na.rm = T),
           grid = F, animate = animationOptions(interval = 3000)
         ),
 
@@ -177,7 +182,7 @@ ui <- dashboardPage(
           label = "Select your Month/Year",
           width = "75%",
           choices = choicez,
-          selected = "Southern Season-2008/2009",
+          selected = choicez[1],
           # from_min = min(unique(df_season$season), na.rm=T), to_max = max(unique(df_season$season), na.rm=T),
           grid = F, animate = animationOptions(interval = 3500)
         ),
@@ -216,7 +221,7 @@ ui <- dashboardPage(
           label = "Select your Month/Year",
           width = "75%",
           choices = choicez,
-          selected = "Southern Season-2008/2009",
+          selected = choicez[1],
           # from_min = min(unique(df_season_hem$moyr), na.rm=T), to_max = max(unique(df_season_hem$moyr), na.rm=T),
           grid = F, animate = animationOptions(interval = 3500)
         ),
