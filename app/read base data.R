@@ -73,7 +73,7 @@ df <- merge(World, df, by.x="iso_a3", by.y="code", all.x=T)
 df <- subset(df, !is.na(df$end_date))
 
 ##### merge in hemisphere
-
+#hemi <- read.csv("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/hemi.csv")
 hemi <- read.csv("hemi.csv")
 
 df <- merge(df, hemi, by="iso_a3", all.x=T)
