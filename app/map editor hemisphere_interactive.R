@@ -127,3 +127,4 @@ mapme_strain_hemi<- function(datez_hem=max(df_hem$moyr, na.rm=T), selection_hem=
   return(map_hem) 
 }
 
+mapme_strain_hemi()
