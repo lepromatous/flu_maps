@@ -119,6 +119,7 @@ mapme_strain_hemi<- function(datez_hem=max(df_hem$moyr, na.rm=T), selection_hem=
                  fillColor = NA,
                  weight = 0.7,
                  color = "black") %>%
+
     addLegend("bottomright", 
               pal = pal, 
               values = as.data.frame(df_hem[,selection_hem])[,1],

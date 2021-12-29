@@ -12,8 +12,7 @@ library(tmaptools)
 #tmap_mode("view")
 library(leaflet)
 library(lubridate)
-library(data.table)
-library(RColorBrewer)
+
 
 ### BASE IS 'DF' READ FROM read base data.R
 
@@ -75,30 +74,10 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
   df_season %>%
     filter(season == datez_season) -> df_season
   
-  ### remove geom
-  pre_season <- df_season
-  sf::st_geometry(pre_season)<-NULL
-  
-  ### get bins
-  binz_season <- create_factor_bins(pre_season, var = pct_b, style = "quantile", 
-                             classes = 4, zero_class = TRUE,
-                             bin_labs = c("Low", "Moderate", "High"),
-                             output = "data")
-  ## merge back
-  df_season <- merge(df_season, binz_season, by="id")
-  df_season[[paste0(selection_season, "_bin")]] <- factor(df_season[[paste0(selection_season, "_bin")]], levels=c("Zero","Low", "Moderate", "High"))
-  
-  # pal <- colorNumeric(
-  #   palette = "Blues",
-  #   domain = as.data.frame(df_season[,selection_season])[,1]
-  # )
-  
-  pal <- colorFactor(
-    palette=RColorBrewer::brewer.pal(n=4, "Purples"),
-    domain = df_season[[paste0(selection, "_bin")]],
-    na.color='gray'
+  pal <- colorNumeric(
+    palette = "Blues",
+    domain = as.data.frame(df_season[,selection_season])[,1]
   )
-  
   
   # labels for popup in HTML
   label <- paste0( '<strong>', "Country: ", '</strong>'
@@ -137,7 +116,7 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
                                    minZoom = -50)) %>%
     setView(lng = 0, lat = 0, zoom = 1.75) %>%
     addPolygons(data = df_season, 
-                fillColor = ~pal(df_season[[paste0(selection, "_bin")]]),
+                fillColor = ~pal(as.data.frame(df_season[,selection_season])[,1]),
                 weight = 0.2,
                 opacity = 1,
                 color = "white",
@@ -150,9 +129,10 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
                  color = "black") %>%
     addLegend("bottomright", 
               pal = pal, 
-              values = df_season[[paste0(selection, "_bin")]],
-              title = paste0("", datez_season, "</br>", "Proportion of Strain"),
+              values = as.data.frame(df_season[,selection_season])[,1],
+              title = paste0("Date: ", datez_season, "</br>", "Percent"),
               opacity = 1) -> map_season
   return(map_season) 
 }
+
 

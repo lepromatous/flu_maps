@@ -26,7 +26,7 @@ options(warn=-1)
 #### read and manage
 ##########################################################################################
 ##########################################################################################
-#setwd("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/")
+setwd("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/")
 
 df <- vroom::vroom("https://quartzpfizer.s3.amazonaws.com/who-influenza.csv")
 

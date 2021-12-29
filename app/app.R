@@ -1,7 +1,7 @@
 library(shiny)
 library(shinydashboard)
-library(Cairo)
-options(shiny.usecairo = TRUE)
+# library(Cairo)
+# options(shiny.usecairo = TRUE)
 library(tidyverse)
 library(vroom)
 library(janitor)
@@ -13,7 +13,12 @@ library(plotly)
 library(rgeos)
 library(leaflet)
 library(htmltools)
-
+library(data.table)
+library(ranger)
+library(Hmisc)
+library(RColorBrewer)
+library(plotly)
+library(ggplotify)
 ### get data
 source("read base data.R")
 

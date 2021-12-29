@@ -11,7 +11,6 @@ library(tmaptools)
 library(leaflet)
 library(lubridate)
 library(data.table)
-library(RColorBrewer)
 
 ### for testing... dont need this in production as run in app.R
 #setwd("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/")
@@ -47,8 +46,6 @@ df_global %>%
     total_h1 = (a_h1 + a_h1n1_pdm09)
   ) -> df_global
 
-### create id to merge
-df_global$id<-seq(1, nrow(df_global))
 
 source("map_bins.R")
 
@@ -65,28 +62,11 @@ mapme_strain<- function(datez=max(df_global$moyr, na.rm=T), selection="pct_b"){
     filter(moyr == datez) -> df_global
   
   
-  ### remove geom
-  pre <- df_global
-  sf::st_geometry(pre)<-NULL
   
-  ### get bins
-  binz <- create_factor_bins(pre, var = pct_b, style = "quantile", 
-                             classes = 4, zero_class = TRUE,
-                             bin_labs = c("Low", "Moderate", "High"),
-                             output = "data")
-  ## merge back
-  df_global <- merge(df_global, binz, by="id")
-  df_global[[paste0(selection, "_bin")]] <- factor(df_global[[paste0(selection, "_bin")]], levels=c("Zero","Low", "Moderate", "High"))
-  # pal <- colorNumeric(
-  #   palette = "Blues",
-  #   domain = as.data.frame(df_global[,selection])[,1]
-  # )
-  # 
   
-  pal <- colorFactor(
-    palette=RColorBrewer::brewer.pal(n=4, "Purples"),
-    domain = df_global[[paste0(selection, "_bin")]],
-    na.color='gray'
+  pal <- colorNumeric(
+    palette = "Blues",
+    domain = as.data.frame(df_global[,selection])[,1]
   )
   
   # labels for popup in HTML
@@ -126,7 +106,7 @@ mapme_strain<- function(datez=max(df_global$moyr, na.rm=T), selection="pct_b"){
                                    minZoom = -50)) %>%
     setView(lng = 0, lat = 0, zoom = 1.75) %>%
     addPolygons(data = df_global, 
-                fillColor = ~pal(df_global[[paste0(selection, "_bin")]]),
+                fillColor = ~pal(as.data.frame(df_global[,selection])[,1]),
                 weight = 0.2,
                 opacity = 1,
                 color = "white",
@@ -139,12 +119,12 @@ mapme_strain<- function(datez=max(df_global$moyr, na.rm=T), selection="pct_b"){
                  color = "black") %>%
     addLegend("bottomright", 
               pal = pal, 
-              values = df_global[[paste0(selection, "_bin")]],
-              title = paste0("", datez, "</br>", "Proportion of Strain"),
+              values = as.data.frame(df_global[,selection])[,1],
+              title = paste0("Date: ", datez, "</br>", "Percent"),
               opacity = 1) ->map
-  # addGraticule(interval=23.5, 
-  #              style = list(color = "black", weight = .6, opacity=0.7),
-  #              options = pathOptions(pointerEvents = "none", clickable = T))-> map
+    # addGraticule(interval=23.5, 
+    #              style = list(color = "black", weight = .6, opacity=0.7),
+    #              options = pathOptions(pointerEvents = "none", clickable = T))-> map
   return(map) 
 }
 
