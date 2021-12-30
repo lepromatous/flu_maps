@@ -13,6 +13,7 @@ library(tmaptools)
 library(leaflet)
 library(lubridate)
 
+source("hemi_lines.R")
 
 ### read map editor global interactive.R first to get df
 
@@ -114,6 +115,10 @@ mapme_strain_season_hem<- function(datez_hem_season=choicez[1], selection_hem_se
                  fillColor = NA,
                  weight = 0.7,
                  color = "black") %>%
+    addPolylines(data=lines,
+                 color="black",
+                 fillColor=NA,
+                 weight=0.7) %>%
     addLegend("bottomright", 
               pal = pal, 
               values = as.data.frame(df_season_hem[,selection_hem_season])[,1],

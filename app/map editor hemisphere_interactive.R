@@ -13,8 +13,8 @@ library(tmaptools)
 library(leaflet)
 library(lubridate)
 
-
-
+#source("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/hemi_lines.R")
+source("hemi_lines.R")
 ### read map editor global interactive.R first to get df
 
 df %>%
@@ -119,7 +119,10 @@ mapme_strain_hemi<- function(datez_hem=max(df_hem$moyr, na.rm=T), selection_hem=
                  fillColor = NA,
                  weight = 0.7,
                  color = "black") %>%
-
+    addPolylines(data=lines,
+                 color="black",
+                 fillColor=NA,
+                 weight=0.7) %>%
     addLegend("bottomright", 
               pal = pal, 
               values = as.data.frame(df_hem[,selection_hem])[,1],

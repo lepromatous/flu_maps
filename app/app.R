@@ -159,8 +159,8 @@ ui <- dashboardPage(
         br(),
         p("Percentages are computed with the total influenza positive specimens per hemisphere as the denominator."),
         br(),
-        p("Color coding corresponds to the total per hemisphere or tropics.
-                                 Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator.")
+        p("Color coding corresponds to the total per hemisphere or tropics."),
+        p("Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator. Horizontal lines are drawn on the map to denote hemisphere separation.")
       ), # close tab item pct strain
 
 
@@ -273,8 +273,8 @@ ui <- dashboardPage(
         br(),
         p("Percentages are computed with the total influenza positive specimens per hemisphere as the denominator."),
         br(),
-        p("Color coding corresponds to the total per hemisphere or tropics.
-                                 Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator.")
+        p("Color coding corresponds to the total per hemisphere or tropics."),
+        p("Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator. Horizontal lines are drawn on the map to denote hemisphere separation.")
       ) # close tab item pct strain
     ) # close tab items
   ), # close dashboard body
