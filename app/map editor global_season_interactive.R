@@ -14,6 +14,7 @@ library(leaflet)
 library(lubridate)
 library(data.table)
 library(RColorBrewer)
+library(rlang)
 
 ### BASE IS 'DF' READ FROM read base data.R
 
@@ -55,6 +56,8 @@ df %>%
 ### create id to merge
 df_season$id<-seq(1, nrow(df_season))
 
+
+#source("/Users/timwiemken/Library/Mobile Documents/com~apple~CloudDocs/Work/Pfizer/flu_maps/app/map_bins.R")
 source("map_bins.R")
 
 
@@ -80,7 +83,9 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
   sf::st_geometry(pre_season)<-NULL
   
   ### get bins
-  binz_season <- create_factor_bins(pre_season, var = pct_b, style = "quantile", 
+  selection_season_2 <- rlang::quo(!! rlang::sym(selection_season))
+  
+  binz_season <- create_factor_bins(pre_season, var = !!selection_season_2, style = "quantile", 
                              classes = 4, zero_class = TRUE,
                              bin_labs = c("Low", "Moderate", "High"),
                              output = "data")
@@ -95,7 +100,7 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
   
   pal <- colorFactor(
     palette=RColorBrewer::brewer.pal(n=4, "Purples"),
-    domain = df_season[[paste0(selection, "_bin")]],
+    domain = df_season[[paste0(selection_season, "_bin")]],
     na.color='gray'
   )
   
@@ -137,7 +142,7 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
                                    minZoom = -50)) %>%
     setView(lng = 0, lat = 0, zoom = 1.75) %>%
     addPolygons(data = df_season, 
-                fillColor = ~pal(df_season[[paste0(selection, "_bin")]]),
+                fillColor = ~pal(df_season[[paste0(selection_season, "_bin")]]),
                 weight = 0.2,
                 opacity = 1,
                 color = "white",
@@ -150,7 +155,7 @@ mapme_strain_season<- function(datez_season=choicez[1], selection_season="pct_b"
                  color = "black") %>%
     addLegend("bottomright", 
               pal = pal, 
-              values = df_season[[paste0(selection, "_bin")]],
+              values = df_season[[paste0(selection_season, "_bin")]],
               title = paste0("", datez_season, "</br>", "Proportion of Strain"),
               opacity = 1) -> map_season
   return(map_season) 

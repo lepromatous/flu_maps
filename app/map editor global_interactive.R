@@ -69,8 +69,9 @@ mapme_strain<- function(datez=max(df_global$moyr, na.rm=T), selection="pct_b"){
   pre <- df_global
   sf::st_geometry(pre)<-NULL
   
+  selection_2 <- rlang::quo(!! rlang::sym(selection))
   ### get bins
-  binz <- create_factor_bins(pre, var = pct_b, style = "quantile", 
+  binz <- create_factor_bins(pre, var = !!selection_2, style = "quantile", 
                              classes = 4, zero_class = TRUE,
                              bin_labs = c("Low", "Moderate", "High"),
                              output = "data")

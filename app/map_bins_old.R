@@ -96,9 +96,9 @@ create_factor_bins <- function(.data, var, new_var, style, classes, zero_class =
   
   # validate parameters
   ## input variable is numeric
-  if (is.numeric(.data[[varQ]]) == FALSE){
-    stop("Input variable for the 'var' argument must be numeric.")
-  }
+  # if (is.numeric(.data[[varQ]]) == FALSE){
+  #   stop("Input variable for the 'var' argument must be numeric.")
+  # }
   
   # optionally subset
   if (zero_class == TRUE){
@@ -132,13 +132,13 @@ create_factor_bins <- function(.data, var, new_var, style, classes, zero_class =
       a[[new_varQ]] <- relevel(a[[new_varQ]], "Zero")
     }
     
-    ## custom return for Tim
-    a %>%
-      select(id, !!new_varQ) -> a
-    
   } else if (output == "breaks"){
     a <- breaks
   }
+  
+  ## custom return for Tim
+  a %>%
+    select(id, !!new_varQ) -> a
 
   # return output
   return(a)
@@ -177,25 +177,3 @@ create_factor_bins <- function(.data, var, new_var, style, classes, zero_class =
 #                    classes = 3, zero_class = FALSE, 
 #                    bin_labs = c("Low", "Moderate", "High"),
 #                    output = "data")
-# 
-# 
-# dummy <- function(.data, selector){
-#   
-#   if (selector == "ham"){
-#     var_name <- "flu_b"
-#   }
-#   
-#   var_name <- rlang::quo(!! rlang::sym(var_name))
-#   
-#   out <- create_factor_bins(.data, var = !!var_name, style = "quantile", 
-#                      classes = 4, zero_class = TRUE, 
-#                      bin_labs = c("Low", "Moderate", "High"),
-#                      output = "data")
-#   
-#   return(out)
-#   
-# }
-# 
-# 
-# dummy(df, selector = "ham")
-

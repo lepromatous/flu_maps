@@ -158,7 +158,6 @@ ui <- dashboardPage(
         leafletOutput("worldmap_hemi", height = "70vh"),
         br(),
         p("Percentages are computed with the total influenza positive specimens per hemisphere as the denominator."),
-        br(),
         p("Color coding corresponds to the total per hemisphere or tropics."),
         p("Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator. Horizontal lines are drawn on the map to denote hemisphere separation.")
       ), # close tab item pct strain
@@ -272,7 +271,6 @@ ui <- dashboardPage(
         leafletOutput("worldmap_season_hemi", height = "70vh"),
         br(),
         p("Percentages are computed with the total influenza positive specimens per hemisphere as the denominator."),
-        br(),
         p("Color coding corresponds to the total per hemisphere or tropics."),
         p("Tropics defined as such if the centroid of the country is within +/- 23.5 degrees from the equator. Horizontal lines are drawn on the map to denote hemisphere separation.")
       ) # close tab item pct strain
